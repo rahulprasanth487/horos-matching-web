@@ -1,0 +1,15 @@
+/* Desktop / large screens */
+#landing-page-container {
+  min-height: 100vh;
+  background-image: url("bg-large.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Mobile / small screens */
+@media (max-width: 768px) {
+  #landing-page-container {
+    background-image: url("/bg-mobile.png");
+  }
+}
