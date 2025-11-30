@@ -5,15 +5,19 @@ import Navbar from "./Navbar";
 import { ChevronDown } from "lucide-react";
 
 interface LandingPageProps {
+    homeRef: React.RefObject<HTMLDivElement | null>;
     coupleDetailsRef: React.RefObject<HTMLDivElement | null>;
+    howItWorksRef: React.RefObject<HTMLDivElement | null>;
+    aboutUsRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const LandingPage: React.FC<LandingPageProps> = (props) => {
     return (
         <div id="landing-page-container"
+            ref={props.homeRef}
             className="w-full min-h-screen grid grid-rows-[auto,1fr]"
         >
-            <Navbar />
+            <Navbar howItWorksRef={props.howItWorksRef} aboutUsRef={props.aboutUsRef}/>
 
             <div className="flex justify-center h-full">
                 <div className="relative flex justify-center mb-[10vh] xs:mb-[25vh] mt-30">

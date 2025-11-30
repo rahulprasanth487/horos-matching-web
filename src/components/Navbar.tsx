@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import kumbh from "/kumbh.svg";
 import { Menu, X } from "lucide-react";
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  howItWorksRef: React.RefObject<HTMLDivElement | null>;
+  aboutUsRef: React.RefObject<HTMLDivElement | null>;
+}
+
+
+const Navbar: React.FC<NavbarProps> = (props) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -22,10 +28,10 @@ const Navbar: React.FC = () => {
 
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-3">
-            <button className="rounded-full bg-yellow-700/80 px-4 py-1.5 text-sm font-medium text-slate-100 hover:bg-yellow-600 transition">
+            <button className="rounded-full bg-yellow-700/80 px-4 py-1.5 text-sm font-medium text-slate-100 hover:bg-yellow-600 transition" onClick={() => props.howItWorksRef.current?.scrollIntoView({ behavior: 'smooth' })}>
               How it works
             </button>
-            <button className="rounded-full bg-yellow-700/80 px-4 py-1.5 text-sm font-medium text-slate-100 hover:bg-yellow-600 transition">
+            <button className="rounded-full bg-yellow-700/80 px-4 py-1.5 text-sm font-medium text-slate-100 hover:bg-yellow-600 transition" onClick={() => props.aboutUsRef.current?.scrollIntoView({ behavior: 'smooth' })}>
               About us
             </button>
           </div>
@@ -44,24 +50,21 @@ const Navbar: React.FC = () => {
 
       {/* Backdrop + FULL overlay panel (covers navbar) */}
       <div
-        className={`md:hidden fixed inset-0 z-50 transition ${
-          open ? "pointer-events-auto" : "pointer-events-none"
-        }`}
+        className={`md:hidden fixed inset-0 z-50 transition ${open ? "pointer-events-auto" : "pointer-events-none"
+          }`}
       >
         {/* Backdrop */}
         <div
-          className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity ${
-            open ? "opacity-100" : "opacity-0"
-          }`}
+          className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity ${open ? "opacity-100" : "opacity-0"
+            }`}
           onClick={() => setOpen(false)}
         />
 
         {/* Slide panel: starts from right, full height, covers navbar */}
         <div
           className={`absolute right-0 top-0 h-full w-72 bg-blue-700/25 text-slate-900 shadow-2xl
-          transform transition-transform duration-300 ease-out ${
-            open ? "translate-x-0" : "translate-x-full"
-          }`}
+          transform transition-transform duration-300 ease-out ${open ? "translate-x-0" : "translate-x-full"
+            }`}
         >
           {/* Panel header with logo + name + close icon */}
           <div className="flex items-center justify-between px-5 pt-6 pb-4 border-b border-yellow-900/40">
@@ -85,10 +88,17 @@ const Navbar: React.FC = () => {
 
           {/* Menu items */}
           <div className="flex flex-col gap-2 px-5 pt-4">
-            <button className="flex items-center justify-between rounded-none border-b border-yellow-700/90 py-3 text-sm font-medium text-white">
+            <button className="flex items-center justify-between rounded-none border-b border-yellow-700/90 py-3 text-sm font-medium text-white" onClick={() => {
+                setOpen(false)
+                props.howItWorksRef.current?.scrollIntoView({ behavior: 'smooth' })
+              }
+            }>
               How it works
             </button>
-            <button className="flex items-center justify-between rounded-none border-b border-yellow-700/90 py-3 text-sm font-medium text-white">
+            <button className="flex items-center justify-between rounded-none border-b border-yellow-700/90 py-3 text-sm font-medium text-white" onClick={() => {
+                setOpen(false)
+                props.aboutUsRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }}>
               About us
             </button>
           </div>
