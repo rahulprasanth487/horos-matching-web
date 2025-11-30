@@ -7,4 +7,6 @@ export interface BirthDetailsFormValues {
   minute: string;
   second: string;
   place: string;
+  latitude: string;
+  longitude: string;
 }

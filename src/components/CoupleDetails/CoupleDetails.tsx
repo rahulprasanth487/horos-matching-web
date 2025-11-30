@@ -1,31 +1,114 @@
 import React from "react";
 import { useState } from "react";
-import type { BirthDetailsFormValues } from "../../utils/types";
 import DetailsForm from "./DetailsForm";
+import type { BirthDetailsFormValues } from "../../utils/types";
 
 interface CoupleDetailsProps {
     coupleDetailsRef: React.RefObject<HTMLDivElement | null>;
+    boyData: BirthDetailsFormValues;
+    girlData: BirthDetailsFormValues;
+    setBoyData: React.Dispatch<React.SetStateAction<BirthDetailsFormValues>>;
+    setGirlData: React.Dispatch<React.SetStateAction<BirthDetailsFormValues>>;
 }
 
 const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
 
-    const initData: BirthDetailsFormValues = {
-        "name": "",
-        "day": "",
-        "month": "",
-        "year": "",
-        "hour": "",
-        "minute": "",
-        "second": "",
-        "place": ""
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
+    const generateCoordinatesForMissingLocations = async (place: string) => {
+        try {
+            const GEOAPIFY_API_KEY = import.meta.env.VITE_APP_GEOAPIFY_API_KEY || "";
+
+            const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+                place
+            )}&format=json&apiKey=${GEOAPIFY_API_KEY}`;
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");;
+            }
+
+            const data = await response.json();
+
+            if (!data.results || data.results.length === 0) {
+                throw new Error("No coordinates found");
+            }
+
+            const best = data.results[0];
+            console.log(`Fetched coordinates for ${place}: Lat ${best.lat}, Lon ${best.lon}`);
+            return {
+                latitude: best.lat.toString(),
+                longitude: best.lon.toString(),
+            };
+        } catch (error) {
+            console.error("Error fetching location:", error);
+        }
     }
 
-    const [boyData, setBoyData] = useState<BirthDetailsFormValues>(initData);
-    const [girlData, setGirlData] = useState<BirthDetailsFormValues>(initData);
+    const validateFormData = async (): Promise<{
+        ok: boolean;
+        boy: BirthDetailsFormValues;
+        girl: BirthDetailsFormValues;
+    }> => {
+        const requiredFields: (keyof BirthDetailsFormValues)[] = ["name", "day", "month", "year", "hour", "minute", "place"];
+        let hasError = false;
+
+        for (const field of requiredFields) {
+            if (!props.boyData[field] || !props.girlData[field]) {
+                hasError = true;
+                break;
+            }
+        }
+
+        if (hasError) {
+            setErrorMessage("Please fill in all required fields for both boy and girl.");
+            return { ok: false, boy: props.boyData, girl: props.girlData };
+        }
+
+        let boy = { ...props.boyData };
+        let girl = { ...props.girlData };
+
+        try {
+            if (!boy.latitude || !boy.longitude) {
+                const coords = await generateCoordinatesForMissingLocations(boy.place);
+                boy = { ...boy, ...coords };
+                props.setBoyData(boy);
+            }
+
+            if (!girl.latitude || !girl.longitude) {
+                const coords = await generateCoordinatesForMissingLocations(girl.place);
+                girl = { ...girl, ...coords };
+                props.setGirlData(girl);
+            }
+        } catch (e) {
+            console.error("Error generating coordinates:", e);
+            setErrorMessage("Error fetching location coordinates.");
+            return { ok: false, boy, girl };
+        }
+
+        setErrorMessage("");
+        return { ok: true, boy, girl };
+    };
+
+
+    const sendCoupleDetailsForMatching = async () => {
+        const { ok, boy, girl } = await validateFormData();
+        if (!ok) return;
+
+        console.log("Sending data to backend for matching...");
+        const request = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/match`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ boy, girl }),
+        });
+
+        const response = await request.json();
+        console.log("Response from backend:", response);
+    }
 
     return (
         <div ref={props.coupleDetailsRef} className="min-h-screen w-full py-10 md:lg:py-2">
-            <div className="flex flex-col items-center justify-center px-1 py-6 h-full lg:md:h-[100vh]">
+            <div className="flex flex-col items-center justify-center px-1 py-6 h-full lg:md:h-[100vh] md:mt-1">
                 <div id="middle-box" className="md:lg:w-[35vw] w-[65vw] min-h-[5vh] lg:md:min-h-[6vh] bg-[linear-gradient(156deg,#3F5EFB_19%,#FC466B_100%)] rounded-t-lg shadow-lg ">
                     {/* Content for CoupleDetails goes here */}
                 </div>
@@ -44,10 +127,10 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
                                     />
                                 </div>
                                 <DetailsForm
-                                    boyData={boyData}
-                                    girlData={girlData}
-                                    setBoyData={setBoyData}
-                                    setGirlData={setGirlData}
+                                    boyData={props.boyData}
+                                    girlData={props.girlData}
+                                    setBoyData={props.setBoyData}
+                                    setGirlData={props.setGirlData}
                                     gender={"male"}
                                 />
                             </div>
@@ -71,10 +154,10 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
                                     />
                                 </div>
                                 <DetailsForm
-                                    boyData={boyData}
-                                    girlData={girlData}
-                                    setBoyData={setBoyData}
-                                    setGirlData={setGirlData}
+                                    boyData={props.boyData}
+                                    girlData={props.girlData}
+                                    setBoyData={props.setBoyData}
+                                    setGirlData={props.setGirlData}
                                     gender={"female"}
                                 />
                             </div>
@@ -84,8 +167,7 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
                             <button
                                 type="button"
                                 onClick={() => {
-                                    // TODO: call your submit / navigation logic here
-                                    console.log("Generate report clicked", { boyData, girlData });
+                                    sendCoupleDetailsForMatching();
                                 }}
                                 className="
                                 px-10 py-3
@@ -100,9 +182,15 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
                                 transition
                                 "
                             >
-                                Generate Report
+                                Check Your Match
                             </button>
                         </div>
+                        {
+                            errorMessage.length != 0 &&
+                            <div className="mt-2 text-center text-red-500 text-sm h-5">
+                                {errorMessage}
+                            </div>
+                        }
                     </div>
                 </div>
 
