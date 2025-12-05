@@ -9,6 +9,8 @@ interface CoupleDetailsProps {
     girlData: BirthDetailsFormValues;
     setBoyData: React.Dispatch<React.SetStateAction<BirthDetailsFormValues>>;
     setGirlData: React.Dispatch<React.SetStateAction<BirthDetailsFormValues>>;
+    setMatchedResponse: React.Dispatch<React.SetStateAction<any>>;
+    matchedRef: React.RefObject<HTMLDivElement | null>
 }
 
 const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
@@ -103,7 +105,11 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
         });
 
         const response = await request.json();
-        console.log("Response from backend:", response);
+        props.setMatchedResponse(response);
+
+        if (response) {
+            props.matchedRef.current?.scrollIntoView({ behavior: 'smooth' })
+        }
     }
 
     return (

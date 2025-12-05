@@ -79,6 +79,13 @@ const Footer: React.FC<FooterProps> = (props) => {
               ))}
             </div>
 
+            {/* name */}
+            <input
+              type="text"
+              placeholder="Your Name"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none text-sm mb-3"
+            />
+
             {/* Comment Box */}
             <textarea
               placeholder="Write your review here..."
