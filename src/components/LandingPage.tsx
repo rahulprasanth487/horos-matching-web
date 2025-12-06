@@ -19,6 +19,7 @@ const LandingPage: React.FC<LandingPageProps> = (props) => {
             });
 
             const response = await request.json();
+            console.log(response)
         } catch (error) {
             console.error("Error during launching:", error);
         }
