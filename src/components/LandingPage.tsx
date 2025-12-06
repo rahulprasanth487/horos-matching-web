@@ -14,7 +14,7 @@ const LandingPage: React.FC<LandingPageProps> = (props) => {
     return (
         <div id="landing-page-container"
             ref={props.homeRef}
-            className="w-full min-h-screen grid grid-rows-[auto,1fr]"
+            className="w-full min-h-screen grid grid-rows-[auto,1fr] bg-black"
         >
             <Navbar howItWorksRef={props.howItWorksRef} aboutUsRef={props.aboutUsRef}/>
 
