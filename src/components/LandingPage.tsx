@@ -1,5 +1,4 @@
 import React from "react";
-import { useState, useEffect } from "react";
 import "./styles/LandingPage.css";
 import Navbar from "./Navbar";
 import { ChevronDown } from "lucide-react";

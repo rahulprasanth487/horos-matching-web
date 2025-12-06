@@ -1,8 +1,6 @@
-import { Proportions } from "lucide-react";
 import React from "react";
 import GaugeComponent from "react-gauge-component";
 import {
-    BarChart,
     Bar,
     XAxis,
     YAxis,
@@ -26,7 +24,6 @@ interface Props {
     matchedRef: React.RefObject<HTMLDivElement | null>;
 }
 
-const COLORS = ["#4f46e5", "#ec4899", "#10b981", "#f59e0b"];
 
 const MatchedContent: React.FC<Props> = ({ matchedResponse, matchedRef }) => {
     if (!matchedResponse?.report) return null;
@@ -112,7 +109,7 @@ const MatchedContent: React.FC<Props> = ({ matchedResponse, matchedRef }) => {
 
 
                 {/* GAUGE + SUMMARY CARD */}
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg rounded-2xl mb-12 p-3 lg:p-8">
+                <div className="w-full bg-gradient-to-br from-purple-50 to-pink-50 shadow-lg rounded-2xl mb-12 p-3 lg:p-8">
                     <div className="flex flex-col lg:flex-col items-center justify-between gap-12">
 
                         {/* GAUGE — LEFT SIDE */}
