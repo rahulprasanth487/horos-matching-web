@@ -11,6 +11,18 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = (props) => {
+
+    const makeAwake = async () => {
+        try {
+            const request = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/health`, {
+                method: "GET",
+            });
+
+            const response = await request.json();
+        } catch (error) {
+            console.error("Error during launching:", error);
+        }
+    }
     return (
         <div id="landing-page-container"
             ref={props.homeRef}
@@ -51,7 +63,10 @@ const LandingPage: React.FC<LandingPageProps> = (props) => {
 
                         transition-all duration-300
                     "
-                    onClick={() => props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => {
+                        props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })
+                        makeAwake()
+                    }}
                 >
                     CHECK YOUR MATCH
                 </button>
@@ -70,7 +85,10 @@ const LandingPage: React.FC<LandingPageProps> = (props) => {
                     flex flex-col items-center justify-center gap-1
                     absolute bottom-5
                     "
-                    onClick={() => props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => {
+                        props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })
+                        makeAwake()
+                    }}
                 >
                     <span className="text-sm sm:text-base text-white">
                     Explore Compatibility based on Zodiac Signs
