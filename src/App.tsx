@@ -10,6 +10,8 @@ import Footer from "./components/Footer";
 import MacthedContent from "./components/PostMatch/MatchedContent";
 import MatchErrorBoundary from "./components/PostMatch/MatchErrorBoundary";
 
+import { Analytics } from '@vercel/analytics/react';
+
 const App: React.FC = () => {
   const homeRef = useRef<HTMLDivElement>(null);
   const coupleDetailsRef = useRef<HTMLDivElement>(null);
@@ -53,7 +55,7 @@ const App: React.FC = () => {
       <div id="matched-content">
         {matchedResponse?.status_code === 200 ? (
           <MatchErrorBoundary>
-            <MacthedContent matchedResponse={matchedResponse} matchedRef={matchedRef}/>
+            <MacthedContent matchedResponse={matchedResponse} matchedRef={matchedRef} />
           </MatchErrorBoundary>
         ) : matchedResponse ? (
           // status present but not 200
@@ -75,6 +77,8 @@ const App: React.FC = () => {
           aboutUsRef={aboutUsRef}
         />
       </div>
+
+      <Analytics />
     </div>
   );
 };
