@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import DetailsForm from "./DetailsForm";
 import type { BirthDetailsFormValues } from "../../utils/types";
+import { AlertCircle } from "lucide-react";
 
 interface CoupleDetailsProps {
     coupleDetailsRef: React.RefObject<HTMLDivElement | null>;
@@ -16,7 +17,9 @@ interface CoupleDetailsProps {
 const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
 
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [showErrorDialog, setShowErrorDialog] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
+    const [genderValidation,setGenderValidation] = useState<{"person1":string,"person2":string}>({"person1":"male","person2":"female"});
 
     const generateCoordinatesForMissingLocations = async (place: string) => {
         try {
@@ -53,6 +56,12 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
         boy: BirthDetailsFormValues;
         girl: BirthDetailsFormValues;
     }> => {
+        if (genderValidation.person1 === genderValidation.person2) {
+            setErrorMessage("Same gender selected. Vedic system does not work for same gender.");
+            setShowErrorDialog(true);
+            return { ok: false, boy: props.boyData, girl: props.girlData };
+        }
+
         const requiredFields: (keyof BirthDetailsFormValues)[] = ["name", "day", "month", "year", "hour", "minute", "place"];
         let hasError = false;
 
@@ -65,6 +74,7 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
 
         if (hasError) {
             setErrorMessage("Please fill in all required fields for both boy and girl.");
+            setShowErrorDialog(true);
             return { ok: false, boy: props.boyData, girl: props.girlData };
         }
 
@@ -86,6 +96,7 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
         } catch (e) {
             console.error("Error generating coordinates:", e);
             setErrorMessage("Error fetching location coordinates.");
+            setShowErrorDialog(true);
             return { ok: false, boy, girl };
         }
 
@@ -104,7 +115,7 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
 
         console.log("Sending data to backend for matching...");
         try {
-            const request = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/match`, {
+            const request = await fetch(`/api/match`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ boy, girl }),
@@ -126,7 +137,7 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
 
     return (
         <div ref={props.coupleDetailsRef} className="min-h-screen w-full py-10 md:lg:py-2">
-            <div className="flex flex-col items-center justify-center px-1 py-6 h-full lg:md:h-[100vh] md:mt-1">
+            <div className="flex flex-col items-center justify-center px-1 py-6 h-full lg:md:h-[110vh] md:mt-1">
                 <div id="middle-box" className="md:lg:w-[35vw] w-[65vw] min-h-[5vh] lg:md:min-h-[6vh] bg-[linear-gradient(156deg,#3F5EFB_19%,#FC466B_100%)] rounded-t-lg shadow-lg ">
                     {/* Content for CoupleDetails goes here */}
                 </div>
@@ -150,6 +161,8 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
                                     setBoyData={props.setBoyData}
                                     setGirlData={props.setGirlData}
                                     gender={"male"}
+                                    genderValidation={genderValidation}
+                                    setGenderValidation={setGenderValidation}
                                 />
                             </div>
 
@@ -177,9 +190,12 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
                                     setBoyData={props.setBoyData}
                                     setGirlData={props.setGirlData}
                                     gender={"female"}
+                                    genderValidation={genderValidation}
+                                    setGenderValidation={setGenderValidation}
                                 />
                             </div>
                         </div>
+
 
                         <div className="flex justify-center mt-6">
                             <button
@@ -213,16 +229,37 @@ const CoupleDetails: React.FC<CoupleDetailsProps> = (props) => {
                                 }
                             </button>
                         </div>
-                        {
-                            errorMessage.length != 0 &&
-                            <div className="mt-2 text-center text-red-500 text-sm h-5">
-                                {errorMessage}
-                            </div>
-                        }
                     </div>
                 </div>
 
-
+                {/* Error Dialog */}
+                {showErrorDialog && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg shadow-2xl p-8 max-w-md mx-4">
+                            <div className="flex items-center gap-4 mb-6">
+                                <AlertCircle className="text-red-600 w-10 h-10 flex-shrink-0" />
+                                <h2 className="text-2xl font-bold text-gray-900">Important</h2>
+                            </div>
+                            <p className="text-gray-800 mb-4 text-base font-semibold">
+                                {errorMessage === "Same gender selected. Vedic system does not work for same gender." 
+                                    ? "Same Gender Selected" 
+                                    : "Error"}
+                            </p>
+                            <p className="text-gray-700 mb-6 text-sm leading-relaxed">
+                                {errorMessage === "Same gender selected. Vedic system does not work for same gender."
+                                    ? "The Vedic astrological matching system is specifically designed to analyze the compatibility between a male and female horoscope. It evaluates various aspects such as Guna matching, Dasha compatibility, and planetary positions relative to both partners' birth charts.\n\nThis system cannot function with same-gender pairs as it relies on complementary energies and traditional astrological principles that are based on male-female dynamics. Please select different genders to proceed with the compatibility check."
+                                    : errorMessage
+                                }
+                            </p>
+                            <button
+                                onClick={() => setShowErrorDialog(false)}
+                                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 rounded-lg transition transform hover:scale-105 active:scale-95"
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 <div id="middle-box" className="md:lg:w-[35vw] w-[65vw] min-h-[5vh] lg:md:min-h-[6vh] bg-[linear-gradient(156deg,#FC466B_19%,#3F5EFB_100%)] rounded-b-lg shadow-lg ">
                     {/* Content for CoupleDetails goes here */}

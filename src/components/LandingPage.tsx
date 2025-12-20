@@ -11,23 +11,10 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = (props) => {
-
-    const makeAwake = async () => {
-        try {
-            const request = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/health`, {
-                method: "GET",
-            });
-
-            const response = await request.json();
-            console.log(response)
-        } catch (error) {
-            console.error("Error during launching:", error);
-        }
-    }
     return (
         <div id="landing-page-container"
             ref={props.homeRef}
-            className="w-full min-h-screen grid grid-rows-[auto,1fr] bg-black"
+            className="w-full min-h-screen grid grid-rows-[auto,1fr]"
         >
             <Navbar howItWorksRef={props.howItWorksRef} aboutUsRef={props.aboutUsRef}/>
 
@@ -64,10 +51,7 @@ const LandingPage: React.FC<LandingPageProps> = (props) => {
 
                         transition-all duration-300
                     "
-                    onClick={() => {
-                        props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })
-                        makeAwake()
-                    }}
+                    onClick={() => props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })}
                 >
                     CHECK YOUR MATCH
                 </button>
@@ -86,10 +70,7 @@ const LandingPage: React.FC<LandingPageProps> = (props) => {
                     flex flex-col items-center justify-center gap-1
                     absolute bottom-5
                     "
-                    onClick={() => {
-                        props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })
-                        makeAwake()
-                    }}
+                    onClick={() => props.coupleDetailsRef.current?.scrollIntoView({ behavior: 'smooth' })}
                 >
                     <span className="text-sm sm:text-base text-white">
                     Explore Compatibility based on Zodiac Signs

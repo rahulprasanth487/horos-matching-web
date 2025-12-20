@@ -1,7 +1,7 @@
 /* Desktop / large screens */
 #landing-page-container {
   min-height: 100vh;
-  background-image: url("/bg-large.png");
+  background-image: url("bg-large.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

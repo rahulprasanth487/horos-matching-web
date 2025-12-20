@@ -1,6 +1,6 @@
 import React from "react";
 import type { BirthDetailsFormValues } from "../../utils/types";
-import { ArrowRightToLine, RotateCw, Loader } from "lucide-react";
+import { ArrowRightToLine, RotateCw, Loader, Mars, Venus } from "lucide-react";
 
 interface DetailsFormProps {
   gender: "male" | "female";
@@ -8,6 +8,8 @@ interface DetailsFormProps {
   girlData: BirthDetailsFormValues;
   setBoyData: React.Dispatch<React.SetStateAction<BirthDetailsFormValues>>;
   setGirlData: React.Dispatch<React.SetStateAction<BirthDetailsFormValues>>;
+  genderValidation?: {"person1":string,"person2":string};
+  setGenderValidation?: React.Dispatch<React.SetStateAction<{"person1":string,"person2":string}>>;
 }
 
 const DetailsForm: React.FC<DetailsFormProps> = ({
@@ -16,6 +18,8 @@ const DetailsForm: React.FC<DetailsFormProps> = ({
   girlData,
   setBoyData,
   setGirlData,
+  genderValidation,
+  setGenderValidation,
 }) => {
   const setData = (
     updater: (prev: BirthDetailsFormValues) => BirthDetailsFormValues
@@ -122,6 +126,57 @@ const DetailsForm: React.FC<DetailsFormProps> = ({
 
   return (
     <div className="flex flex-col w-full gap-y-[3vh] h-full px-3 py-3 sm:px-4 sm:py-4 md:px-4 md:py-4 rounded-lg shadow-md justify-center bg-white/30 backdrop-blur-md border border-white/30">
+      {/* Gender Selection */}
+      <div className="flex flex-col">
+        <label className="mb-1 sm:mb-1.5 md:mb-2 text-xs sm:text-sm md:text-base font-medium">
+          Gender<span className="text-red-500">*</span>
+        </label>
+        <div className="flex gap-3 bg-opacity-10 p-2 rounded-lg">
+          <button
+            type="button"
+            className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-medium transition ${
+              (gender === "male" ? genderValidation?.person1 : genderValidation?.person2) === "male"
+                ? "bg-blue-500 text-white border-blue-500"
+                : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+            }`}
+            onClick={() => {
+              if (setGenderValidation) {
+                setGenderValidation((prev) => ({
+                  ...prev,
+                  [gender === "male" ? "person1" : "person2"]: "male",
+                }));
+              }
+            }}
+          >
+            <span className="text-lg">
+              <Mars className="h-5 w-5" />
+            </span>
+            Male
+          </button>
+          <button
+            type="button"
+            className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-medium transition ${
+              (gender === "male" ? genderValidation?.person1 : genderValidation?.person2) === "female"
+                ? "bg-pink-500 text-white border-pink-500"
+                : "bg-white text-gray-700 border-gray-300 hover:border-pink-400"
+            }`}
+            onClick={() => {
+              if (setGenderValidation) {
+                setGenderValidation((prev) => ({
+                  ...prev,
+                  [gender === "male" ? "person1" : "person2"]: "female",
+                }));
+              }
+            }}
+          >
+            <span className="text-lg">
+              <Venus className="h-5 w-5" />
+            </span>
+            Female
+          </button>
+        </div>
+      </div>
+
       {/* Name (required) */}
       <div className="flex flex-col">
         <label className="mb-1 sm:mb-1.5 md:mb-2 text-xs sm:text-sm md:text-base font-medium">
